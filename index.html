@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #2542d3;
+        }
+        input, textarea {
+            margin: 10px 0;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            padding: 12px;
+            background-color: #2542d3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #1d2a8a;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <form id="contact-form">
+        <h2>Bienvenue chez Mondial Santé</h2>
+        <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
+        <div class="error" id="firstNameError"></div>
+        <input type="text" id="lastName" name="lastName" placeholder="Last Name" required>
+        <div class="error" id="lastNameError"></div>
+        <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Phone Number" required>
+        <div class="error" id="phoneNumberError"></div>
+        <input type="email" id="email" name="email" placeholder="Email" required>
+        <div class="error" id="emailError"></div>
+        <input type="text" id="phonePrefix" name="Pays" placeholder="Pays" required>
+        <div class="error" id="phonePrefixError"></div>
+        <textarea id="description" name="description" placeholder="Description" required></textarea>
+        <div class="error" id="descriptionError"></div>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        document.getElementById('contact-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Clear previous error messages
+            const errorElements = document.querySelectorAll('.error');
+            errorElements.forEach(el => el.textContent = '');
+
+            // Collect form data
+            const formData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                email: document.getElementById('email').value,
+                phonePrefix: document.getElementById('Pays').value,
+                description: document.getElementById('description').value
+            };
+
+            // Simple validation
+            let valid = true;
+            if (!formData.firstName) {
+                document.getElementById('firstNameError').textContent = "First name is required.";
+                valid = false;
+            }
+            if (!formData.lastName) {
+                document.getElementById('lastNameError').textContent = "Last name is required.";
+                valid = false;
+            }
+            if (!formData.phoneNumber) {
+                document.getElementById('phoneNumberError').textContent = "Phone number is required.";
+                valid = false;
+            }
+            if (!formData.email) {
+                document.getElementById('emailError').textContent = "Email is required.";
+                valid = false;
+            }
+            if (!formData.phonePrefix) {
+                document.getElementById('phonePrefixError').textContent = "Phone prefix is required.";
+                valid = false;
+            }
+            if (!formData.description) {
+                document.getElementById('descriptionError').textContent = "Description is required.";
+                valid = false;
+            }
+
+            if (valid) {
+                fetch('https://dbf4-196-235-190-204.ngrok-free.app/api/save-prospect', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    // Optionally reset the form
+                    document.getElementById('contact-form').reset();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again later.');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
